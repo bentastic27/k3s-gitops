@@ -1,0 +1,106 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: minecraft-survival
+  namespace: minecraft
+  labels:
+    app: minecraft
+data:
+  EULA: "TRUE" # Must accept EULA to use this minecraft server
+  TYPE: PAPER
+  PLUGINS: |
+    https://download.geysermc.org/v2/projects/geyser/versions/latest/builds/latest/downloads/spigot
+    https://download.geysermc.org/v2/projects/floodgate/versions/latest/builds/latest/downloads/spigot
+    https://github.com/ViaVersion/ViaVersion/releases/download/5.12.0/ViaVersion-5.12.0.jar
+  MEMORY: 4G
+  DIFFICULTY: easy
+  VIEW_DISTANCE: "20"
+  OPS: |
+    bentastic27
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: minecraft-survival
+  namespace: minecraft
+spec:
+  storageClassName: local-path
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: minecraft
+  name: minecraft
+  namespace: minecraft
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minecraft
+  template:
+    metadata:
+      labels:
+        app: minecraft
+    spec:
+      containers:
+      - name: main
+        image: itzg/minecraft-server:stable
+        securityContext:
+          runAsUser: 1000
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: 6Gi
+            cpu: 2
+        envFrom:
+        - configMapRef:
+            name: minecraft-survival
+        volumeMounts:
+        - mountPath: /data
+          name: data
+        ports:
+        - containerPort: 19132
+          protocol: UDP
+          name: bedrock
+        - containerPort: 25565
+          protocol: TCP
+          name: java
+        readinessProbe: &probe
+          exec:
+            command:
+            - mc-monitor
+            - status
+          initialDelaySeconds: 30
+          failureThreshold: 10
+        livenessProbe: *probe
+        tty: true
+        stdin: true
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: minecraft-survival
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minecraft
+  namespace: minecraft
+spec:
+  selector:
+    app: minecraft
+  ports:
+  - port: 19132
+    protocol: UDP
+    name: bedrock
+    nodePort: 30132
+  - port: 25565
+    protocol: TCP
+    name: java
+    nodePort: 30565
+  type: NodePort

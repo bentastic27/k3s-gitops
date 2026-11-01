@@ -1,0 +1,54 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: coredns
+  namespace: flux
+spec:
+  interval: 10m
+  timeout: 5m
+  releaseName: coredns
+  targetNamespace: coredns
+  chart:
+    spec:
+      chart: coredns
+      version: '1.48.2'
+      sourceRef:
+        kind: HelmRepository
+        name: coredns
+  values:
+    isClusterService: false
+    # DNS has to be on port 53 of the node, which is below the NodePort range,
+    # so this goes through k3s servicelb instead
+    serviceType: LoadBalancer
+    livenessProbe:
+      initialDelaySeconds: 15
+    servers:
+    - zones:
+      - zone: .
+        use_tcp: true
+      port: 53
+      plugins:
+      - name: errors
+      - name: health
+        configBlock: |-
+          lameduck 10s
+      - name: ready
+      - name: hosts
+        configBlock: |-
+          ${NODE_IP} geo.hivebedrock.network
+          ${NODE_IP} hivebedrock.network
+          ${NODE_IP} play.inpvp.net
+          ${NODE_IP} mco.lbsg.net
+          ${NODE_IP} play.galaxite.net
+          ${NODE_IP} play.enchanted.gg
+          ${NODE_IP} mco.cubecraft.net
+          fallthrough
+      - name: prometheus
+        parameters: 0.0.0.0:9153
+      - name: forward
+        parameters: . 8.8.8.8:53 8.8.4.4:53
+      - name: cache
+        parameters: 30
+      - name: loop
+      - name: reload
+      - name: loadbalance

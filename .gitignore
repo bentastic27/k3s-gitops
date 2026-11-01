@@ -1,0 +1,9 @@
+tmp.yaml
+accessKeyId
+secretAccessKey
+OAUTH2_PROXY*
+.vscode
+*.json
+hostedZoneId
+zone
+RESTIC_PASSWORD
