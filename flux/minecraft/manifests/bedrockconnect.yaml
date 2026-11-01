@@ -32,6 +32,9 @@ metadata:
   namespace: minecraft
 spec:
   replicas: 1
+  # the old pod has to release hostPort 19132 before the new one can schedule
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: bedrockconnect
@@ -58,7 +61,9 @@ spec:
           mountPath: "/app"
           readOnly: true
         ports:
+        # the Switch always connects on 19132, below the NodePort range
         - containerPort: 19132
+          hostPort: 19132
           protocol: UDP
           name: bedrock
       volumes:
@@ -82,5 +87,4 @@ spec:
     targetPort: 19132
   selector:
     app: bedrockconnect
-  # the Switch always connects on 19132, below the NodePort range, so use k3s servicelb
-  type: LoadBalancer
+  type: ClusterIP
