@@ -8,8 +8,8 @@ minecraft servers and the CoreDNS server that lets the Switch reach them.
 
 | Service | Type | Port(s) on the node |
 |---|---|---|
-| minecraft (survival) | NodePort | java `30565/tcp`, bedrock `30132/udp` |
-| minecraft2 (creative) | NodePort | java `30566/tcp`, bedrock `30133/udp` |
+| survival | NodePort | java `30565/tcp`, bedrock `30132/udp` |
+| creative | NodePort | java `30566/tcp`, bedrock `30133/udp` |
 | bedrock (kid) | NodePort | bedrock `30134/udp` |
 | bedrockconnect | LoadBalancer (k3s servicelb) | `19132/udp` |
 | coredns | LoadBalancer (k3s servicelb) | `53/udp`, `53/tcp` |

@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: minecraft-survival
+  name: survival
   namespace: minecraft
   labels:
-    app: minecraft
+    app: survival
 data:
   EULA: "TRUE" # Must accept EULA to use this minecraft server
   TYPE: PAPER
@@ -21,7 +21,7 @@ data:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: minecraft-survival
+  name: survival
   namespace: minecraft
 spec:
   storageClassName: local-path
@@ -35,18 +35,18 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   labels:
-    app: minecraft
-  name: minecraft
+    app: survival
+  name: survival
   namespace: minecraft
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: minecraft
+      app: survival
   template:
     metadata:
       labels:
-        app: minecraft
+        app: survival
     spec:
       containers:
       - name: main
@@ -60,7 +60,7 @@ spec:
             cpu: 2
         envFrom:
         - configMapRef:
-            name: minecraft-survival
+            name: survival
         volumeMounts:
         - mountPath: /data
           name: data
@@ -84,16 +84,16 @@ spec:
       volumes:
       - name: data
         persistentVolumeClaim:
-          claimName: minecraft-survival
+          claimName: survival
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: minecraft
+  name: survival
   namespace: minecraft
 spec:
   selector:
-    app: minecraft
+    app: survival
   ports:
   - port: 19132
     protocol: UDP

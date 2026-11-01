@@ -2,7 +2,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
 - namespace.yaml
-- minecraft.yaml
-- minecraft2.yaml
+- survival.yaml
+- creative.yaml
 - bedrockconnect.yaml
 - bedrock.yaml

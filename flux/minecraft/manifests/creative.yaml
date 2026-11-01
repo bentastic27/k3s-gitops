@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: minecraft2
+  name: creative
   namespace: minecraft
   labels:
-    app: minecraft2
+    app: creative
 data:
   EULA: "TRUE" # Must accept EULA to use this minecraft server
   TYPE: PAPER
@@ -44,7 +44,7 @@ data:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: minecraft2
+  name: creative
   namespace: minecraft
 spec:
   storageClassName: local-path
@@ -58,18 +58,18 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   labels:
-    app: minecraft2
-  name: minecraft2
+    app: creative
+  name: creative
   namespace: minecraft
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: minecraft2
+      app: creative
   template:
     metadata:
       labels:
-        app: minecraft2
+        app: creative
     spec:
       containers:
       - name: main
@@ -83,7 +83,7 @@ spec:
             cpu: 2
         envFrom:
         - configMapRef:
-            name: minecraft2
+            name: creative
         volumeMounts:
         - mountPath: /data
           name: data
@@ -107,16 +107,16 @@ spec:
       volumes:
       - name: data
         persistentVolumeClaim:
-          claimName: minecraft2
+          claimName: creative
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: minecraft2
+  name: creative
   namespace: minecraft
 spec:
   selector:
-    app: minecraft2
+    app: creative
   ports:
   - port: 19132
     protocol: UDP
