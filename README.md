@@ -10,7 +10,6 @@ minecraft servers and the CoreDNS server that lets the Switch reach them.
 |---|---|---|
 | survival | NodePort | java `30565/tcp`, bedrock `30132/udp` |
 | creative | NodePort | java `30566/tcp`, bedrock `30133/udp` |
-| bedrock (kid) | NodePort | bedrock `30134/udp` |
 | bedrockconnect | LoadBalancer (k3s servicelb) | `19132/udp` |
 | coredns | host network, bound to `NODE_IP` | `53/udp`, `53/tcp` |
 

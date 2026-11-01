@@ -19,12 +19,6 @@ data:
         "iconUrl": "https://i.imgur.com/3BmFZRE.png",
         "address": "${NODE_IP}",
         "port": 30133
-      },
-      {
-        "name": "kid",
-        "iconUrl": "https://i.imgur.com/3BmFZRE.png",
-        "address": "${NODE_IP}",
-        "port": 30134
       }
     ]
 
