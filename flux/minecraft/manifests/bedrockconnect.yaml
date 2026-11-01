@@ -34,7 +34,9 @@ spec:
   replicas: 1
   # the old pod has to release hostPort 19132 before the new one can schedule
   strategy:
-    type: Recreate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: bedrockconnect
