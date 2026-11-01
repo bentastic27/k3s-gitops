@@ -12,11 +12,16 @@ minecraft servers and the CoreDNS server that lets the Switch reach them.
 | creative | NodePort | java `30566/tcp`, bedrock `30133/udp` |
 | bedrock (kid) | NodePort | bedrock `30134/udp` |
 | bedrockconnect | LoadBalancer (k3s servicelb) | `19132/udp` |
-| coredns | LoadBalancer (k3s servicelb) | `53/udp`, `53/tcp` |
+| coredns | host network, bound to `NODE_IP` | `53/udp`, `53/tcp` |
 
 bedrockconnect and coredns can't be NodePorts: the Switch only talks to them on their
-standard ports (53 and 19132), which sit below the NodePort range. They use k3s's
-built-in servicelb, so don't install k3s with `--disable servicelb`.
+standard ports (53 and 19132), which sit below the NodePort range. bedrockconnect uses
+k3s's built-in servicelb, so don't install k3s with `--disable servicelb`.
+
+coredns runs on the host network bound to `NODE_IP` only. Putting it behind servicelb
+hijacks the host's own DNS (127.0.0.53), which breaks image pulls whenever the pod is
+down. If the node's IP changes, update the `cluster-vars` ConfigMap or coredns won't
+start.
 
 ## Switch setup
 

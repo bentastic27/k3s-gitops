@@ -15,11 +15,27 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: coredns
+  # DNS has to be on port 53 of the node. A servicelb/hostPort on 53 DNATs every
+  # local address, including the host's systemd-resolved stub (127.0.0.53), so the
+  # node loses DNS whenever this pod is down and can't even pull its own image.
+  # Instead run on the host network and bind only the node IP.
+  postRenderers:
+  - kustomize:
+      patches:
+      - target:
+          kind: Deployment
+          name: coredns
+        patch: |
+          - op: add
+            path: /spec/template/spec/hostNetwork
+            value: true
   values:
     isClusterService: false
-    # DNS has to be on port 53 of the node, which is below the NodePort range,
-    # so this goes through k3s servicelb instead
-    serviceType: LoadBalancer
+    serviceType: ClusterIP
+    # two host-network pods can't both hold :53, so replace instead of surging
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 0
     livenessProbe:
       initialDelaySeconds: 15
     servers:
@@ -28,6 +44,8 @@ spec:
         use_tcp: true
       port: 53
       plugins:
+      - name: bind
+        parameters: ${NODE_IP}
       - name: errors
       - name: health
         configBlock: |-
