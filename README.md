@@ -31,10 +31,7 @@ kubectl create ns flux
 # node IP used by the coredns hosts entries and bedrockconnect's server list
 kubectl -n flux create configmap cluster-vars --from-literal=NODE_IP=192.168.1.x
 
-flux bootstrap -n flux github \
-  --owner=bentastic27 \
-  --repository=k3s-gitops \
-  --private=false \
-  --personal=true \
-  --path=flux
+# public repo, so no PAT or deploy key: flux pulls over anonymous HTTPS
+kubectl apply -f https://raw.githubusercontent.com/bentastic27/k3s-gitops/main/flux/flux/gotk-components.yaml
+kubectl apply -f https://raw.githubusercontent.com/bentastic27/k3s-gitops/main/flux/flux/gotk-sync.yaml
 ```
