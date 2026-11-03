@@ -1,0 +1,20 @@
+# Patch definitions applied by itzg/minecraft-server at startup (PATCH_DEFINITIONS).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: patches
+  namespace: minecraft
+  annotations:
+    # the patch ops use $set / $.path, keep Flux's postBuild envsubst off them
+    kustomize.toolkit.fluxcd.io/substitute: disabled
+data:
+  # Spark's background profiler signals the JVM with SIGVTALRM, which the containerd
+  # AppArmor profile denies hundreds of times a second, flooding the kernel log.
+  # On a fresh volume spark creates this file on first boot, so it applies from the second.
+  spark.json: |
+    {
+      "file": "/data/plugins/spark/config.json",
+      "ops": [
+        {"$set": {"path": "$.backgroundProfiler", "value": false}}
+      ]
+    }

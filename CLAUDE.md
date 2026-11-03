@@ -65,4 +65,5 @@ To undo: delete the file, then run `update-grub` for the GRUB one, and reboot.
 `spark-async-sam` (the spark profiler in a minecraft server pod) sends SIGVTALRM, and
 the `cri-containerd.apparmor.d` profile denies it, hundreds of times a second (~470k
 audit lines in 40 min). It probably didn't cause the freezes, but it buries everything
-else in the journal. Turning off spark in the server config would fix it.
+else in the journal. Fixed by `flux/minecraft/manifests/patches.yaml`, which sets
+spark's `backgroundProfiler` to false at startup via the image's `PATCH_DEFINITIONS`.

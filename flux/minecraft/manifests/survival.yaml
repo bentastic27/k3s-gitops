@@ -15,6 +15,7 @@ data:
   MEMORY: 4G
   DIFFICULTY: easy
   VIEW_DISTANCE: "20"
+  PATCH_DEFINITIONS: /patches
   OPS: |
     bentastic27
 ---
@@ -64,6 +65,8 @@ spec:
         volumeMounts:
         - mountPath: /data
           name: data
+        - mountPath: /patches
+          name: patches
         ports:
         - containerPort: 19132
           protocol: UDP
@@ -85,6 +88,9 @@ spec:
       - name: data
         persistentVolumeClaim:
           claimName: survival
+      - name: patches
+        configMap:
+          name: patches
 ---
 apiVersion: v1
 kind: Service
